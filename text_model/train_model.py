@@ -4,18 +4,19 @@ import tensorflow as tf
 from model import build_model
 import model_config as mc
 
-X = np.load("model_data/X.npy")
-y = np.load("model_data/y.npy")
+X = np.load("model_data/X_small.npy")
+y = np.load("model_data/y_small.npy")
 
 # лейблы из файла
-with open("model_data/label_to_index.pkl", "rb") as f:
+with open("model_data/label_to_index_small.pkl", "rb") as f:
     label_classes = pickle.load(f)
+print(label_classes)
 
 num_classes = len(label_classes)
 model = build_model(num_classes)
 
 history_new = model.fit(X, y, batch_size=mc.BATCH_SIZE, epochs=mc.EPOCHS, validation_split=0.2)
-np.save("model_data/training_history.npy", history_new.history)
+np.save("data_arrays/training_history_small.npy", history_new.history)
 
-model.save("./emotion_model3.h5")
+model.save("./emotion_model_small.h5")
 print("Модель обучена и сохранена")

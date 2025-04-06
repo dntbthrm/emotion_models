@@ -10,7 +10,7 @@ X_test = np.load("model_data/X_test.npy")
 y_test = np.load("model_data/y_test.npy")
 
 # Загружаем модель
-model = tf.keras.models.load_model("emotion_model2.h5")
+model = tf.keras.models.load_model("emotion_model3.h5")
 
 # Загружаем метки классов
 with open("model_data/label_to_index.pkl", "rb") as f:
@@ -46,7 +46,7 @@ print(report)
 # ======= Построение графиков =======
 
 # 1️⃣ График изменения точности (accuracy) и потерь (loss) во время обучения
-history = np.load("model_data/training_history.npy", allow_pickle=True).item()
+history = np.load("data_arrays/training_history.npy", allow_pickle=True).item()
 
 plt.figure(figsize=(12, 5))
 
@@ -68,7 +68,7 @@ plt.ylabel("Loss")
 plt.title("График функции потерь")
 plt.legend()
 
-plt.savefig("accuracy_loss.png")
+plt.savefig("accuracy_loss_4.png")
 
 # 2️⃣ Матрица ошибок (confusion matrix)
 conf_matrix = confusion_matrix(y_true, y_pred)
@@ -79,4 +79,4 @@ sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues",
 plt.xlabel("Предсказанные классы")
 plt.ylabel("Истинные классы")
 plt.title("Матрица ошибок (Confusion Matrix)")
-plt.savefig("confusion_matrix.png")
+plt.savefig("confusion_matrix_4.png")
