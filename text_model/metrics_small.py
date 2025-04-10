@@ -6,13 +6,17 @@ from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
 
 # Загружаем тестовые данные
-X_test = np.load("model_data/X_test_small.npy")
-y_test = np.load("model_data/y_test_small.npy")
+#X_test = np.load("model_data/X_test_small.npy")
+#y_test = np.load("model_data/y_test_small.npy")
+
+X_test = np.load("train_test_data/X_test_small.npy")
+y_test = np.load("train_test_data/y_test_small.npy")
 
 # Загружаем модель
-model = tf.keras.models.load_model("emotion_model_small.h5")
-
+#model = tf.keras.models.load_model("emotion_model_small.h5")
+model = tf.keras.models.load_model("best_model.keras")
 # Загружаем метки классов
+#with open("train_test_data/label_to_index_small.pkl", "rb") as f:
 with open("model_data/label_to_index_small.pkl", "rb") as f:
     label_classes = pickle.load(f)
 
@@ -46,7 +50,7 @@ print(report)
 # ======= Построение графиков =======
 
 # 1️⃣ График изменения точности (accuracy) и потерь (loss) во время обучения
-history = np.load("data_arrays/training_history_small.npy", allow_pickle=True).item()
+history = np.load("data_arrays/training_history_small_v3.npy", allow_pickle=True).item()
 
 plt.figure(figsize=(12, 5))
 
@@ -68,7 +72,7 @@ plt.ylabel("Loss")
 plt.title("График функции потерь")
 plt.legend()
 
-plt.savefig("accuracy_loss_small.png")
+#plt.savefig("images/accuracy_loss_small_v3.png")
 
 # 2️⃣ Матрица ошибок (confusion matrix)
 conf_matrix = confusion_matrix(y_true, y_pred)
@@ -79,4 +83,4 @@ sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues",
 plt.xlabel("Предсказанные классы")
 plt.ylabel("Истинные классы")
 plt.title("Матрица ошибок (Confusion Matrix)")
-plt.savefig("confusion_matrix_small.png")
+#plt.savefig("images/confusion_matrix_small_v3.png")

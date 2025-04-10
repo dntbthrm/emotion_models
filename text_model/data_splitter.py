@@ -11,8 +11,10 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.model_selection import train_test_split
 import pickle
 from data_preprocessing import basic_emotions
+import model_config as mc
 
-proc_data = pd.read_csv("../../dataset/ru-go-emotions-preprocessed.csv")
+#proc_data = pd.read_csv("../../dataset/ru-go-emotions-preprocessed.csv")
+proc_data = pd.read_csv("../../dataset/ru-go-emotions-preprocessed_v2.csv")
 
 nltk.download("stopwords")
 stop_words = set(stopwords.words("russian"))
@@ -36,32 +38,30 @@ proc_data["label"] = proc_data[basic_emotions].apply(extract_labels, axis=1)
 mlb = MultiLabelBinarizer()
 y = mlb.fit_transform(proc_data["label"])
 
-with open("model_data/label_to_index_small.pkl", "wb") as f:
+with open("train_test_data/label_to_index_small.pkl", "wb") as f:
     pickle.dump(mlb.classes_, f)
 
-MAX_VOCAB_SIZE = 20000
-MAX_SEQUENCE_LENGTH = 100
 
-tokenizer = Tokenizer(num_words=MAX_VOCAB_SIZE)
+tokenizer = Tokenizer(num_words=mc.MAX_VOCAB_SIZE)
 tokenizer.fit_on_texts(proc_data["ru_text"])
 
 X = tokenizer.texts_to_sequences(proc_data["ru_text"])
-X = pad_sequences(X, maxlen=MAX_SEQUENCE_LENGTH)
+X = pad_sequences(X, maxlen=mc.MAX_SEQUENCE_LENGTH)
 
-np.save("model_data/X_small.npy", X)
-np.save("model_data/y_small.npy", y)
+np.save("train_test_data/X_small.npy", X)
+np.save("train_test_data/y_small.npy", y)
 
-with open("model_data/tokenizer_small.pkl", "wb") as f:
+with open("train_test_data/tokenizer_small.pkl", "wb") as f:
     pickle.dump(tokenizer, f)
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-if not os.path.exists("model_data/X_train_small.npy"):
-    np.save("model_data/X_train_small.npy", X_train)
-    np.save("model_data/X_test_small.npy", X_test)
-    np.save("model_data/y_train_small.npy", y_train)
-    np.save("model_data/y_test_small.npy", y_test)
+if not os.path.exists("train_test_data/X_train_small.npy"):
+    np.save("train_test_data/X_train_small.npy", X_train)
+    np.save("train_test_data/X_test_small.npy", X_test)
+    np.save("train_test_data/y_train_small.npy", y_train)
+    np.save("train_test_data/y_test_small.npy", y_test)
     print("Данные сохранены.")
 else:
     print("Данные уже существуют и не перезаписываются.")
 
-print("Данные сохранены!")
+print("Все данные сохранены!")

@@ -1,6 +1,11 @@
 import pandas as pd
 import numpy as np
 
+''' 
+Изменение оригинального датасета в соответствии с 
+базовыми эмоциями
+'''
+
 whole_emotions = [
 'admiration', 'amusement', 'anger', 'annoyance', 'approval', 'caring',
  'confusion', 'curiosity', 'desire', 'disappointment', 'disapproval', 'disgust',
@@ -11,28 +16,30 @@ whole_emotions = [
 
 basic_emotions = ['anger', 'disgust', 'fear', 'joy', 'sadness', 'surprise', 'neutral']
 defined_switch = {
-    'admiration': {'joy'},
-    'amusement': {'joy'},
-    'annoyance': {'anger'},
-    'confusion': {'sadness', 'surprise'},
-    'curiosity': {'surprise'},
+    'admiration': {'joy'}, # восхищение
+    'amusement': {'joy'}, # увлечение
+    'annoyance': {'anger', 'disgust'},
+    'confusion': {'sadness', 'fear'},
+    #'curiosity': {'surprise'},
     'disappointment': {'sadness', 'surprise'},
-    'disapproval': {'surprise', 'anger'},
-    'embarrassment': {'sadness', 'surprise'},
-    'excitement': {'fear', 'joy'},
+    'disapproval': {'disgust', 'anger'},
+    'embarrassment': {'sadness', 'fear'},
+    'excitement': {'surprise', 'joy'},
     'grief': {'sadness'},
-    'nervousness': {'fear', 'sadness'},
+    'nervousness': {'fear', 'sadness', 'anger'},
     'optimism': {'joy'},
-    'pride': {'joy'},
+    #'pride': {'joy'},
     'remorse': {'sadness', 'disgust'}
 }
 
-non_defined = {'approval', 'caring', 'desire', 'gratitude', 'love', 'realization', 'relief'}
+non_defined = {'approval', 'caring', 'desire', 'gratitude', 'love', 'realization', 'relief', 'curiosity', 'pride'}
 
 raw_data = pd.read_csv("../../dataset/ru-go-emotions-raw.csv")
 
 proc_data = raw_data.copy()
 
+
+# изменение классов, где эмоция определяется комбинацией базовых
 def change_def_emotion(index, column):
     basic_list = defined_switch[column]
     for emo in basic_list:
@@ -49,18 +56,31 @@ def change_non_def(index):
 
 print("Оригинальный датасет: ", raw_data.shape, "\nКолонки: ", raw_data.columns)
 
-for i, raw in enumerate(proc_data):
+
+for i in range (proc_data.shape[0]):
     for col in proc_data.columns:
-        '''if col in non_defined and proc_data.at[i, col] == 1:
-            change_non_def(i)'''
         if col in defined_switch and proc_data.at[i, col] == 1:
             change_def_emotion(i, col)
+
 
 norm_columns = ['ru_text'] + basic_emotions
 
 proc_data = proc_data[norm_columns].dropna()
-proc_data.to_csv("../../dataset/ru-go-emotions-preprocessed.csv", index=False)
+
+nulls_proc = (proc_data[basic_emotions].sum(axis=1) == 0)
+kolv0 = (proc_data[basic_emotions].sum(axis=1) == 0).sum()
+nulls_raw = (raw_data[basic_emotions].sum(axis=1) == 0)
+old_kolv0 = (raw_data[basic_emotions].sum(axis=1) == 0).sum()
+print(f"Novy dataset: {kolv0}; Stary dataset: {old_kolv0}")
+proc_data.to_csv("../../dataset/ru-go-emotions-preprocessed_v2.csv", index=False)
 print("Новый датасет: ", proc_data.shape, "\nКолонки: ", proc_data.columns, "\nФайл csv сохранен вне папки")
+print("Новый датасет: ", proc_data.shape)
+
+#print(proc_data[nulls_proc].iloc[0])
+#print(raw_data[nulls_raw].iloc[0])
+
+proc_data = proc_data[~nulls_proc].reset_index(drop=True)
+print("Новый датасет 2: ", proc_data.shape)
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -79,7 +99,7 @@ plt.xlabel("Эмоции")
 plt.ylabel("Количество вхождений")
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig("images/proc_data_class.png")
+plt.savefig("images/proc_data_class_v2.png")
 
 emotion_counts = raw_data[whole_emotions].sum().sort_values(ascending=False)
 
@@ -96,7 +116,7 @@ plt.xlabel("Эмоции")
 plt.ylabel("Количество вхождений")
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig("images/raw_data_class.png")
+plt.savefig("images/raw_data_class_v2.png")
 
 
 
