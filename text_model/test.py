@@ -2,12 +2,16 @@ import numpy as np
 import pickle
 import tensorflow as tf
 from keras._tf_keras.keras.preprocessing.sequence import pad_sequences
+tf.config.set_visible_devices([], 'GPU')
+
+
 
 model1 = tf.keras.models.load_model("emotion_model.h5")
 model2 = tf.keras.models.load_model("emotion_model2.h5")
 model3 = tf.keras.models.load_model("emotion_model3.h5")
 model_small = tf.keras.models.load_model("emotion_model_small.h5")
-model_small_v2 = tf.keras.models.load_model("emotion_model_small_v2.keras")
+model_small_v2 = tf.keras.models.load_model("emotion_classifier.keras")
+#model_ext = tf.keras.models.load_model('../../dataset/text_lstm_weight_1.h5')
 
 with open("model_data/tokenizer.pkl", "rb") as f:
     tokenizer = pickle.load(f)
@@ -28,8 +32,8 @@ with open("model_data/label_to_index_small.pkl", "rb") as f:
 with open("train_test_data/label_to_index_small.pkl", "rb") as f:
     label_classes_small_v2 = pickle.load(f)
 
-MAX_SEQUENCE_LENGTH = 100
-THRESHOLD = 0.2
+MAX_SEQUENCE_LENGTH = 20
+THRESHOLD = 0.0
 
 while True:
     text = input("Введите текст (или 'exit' для выхода): ")
@@ -50,6 +54,7 @@ while True:
     prediction3 = model3.predict(padded_sequence)[0]
     prediction_small = model_small.predict(padded_sequence_small)[0]
     prediction_small_v2 = model_small_v2.predict(padded_sequence_small)[0]
+    #prediction_ext = model_ext.predict(padded_sequence_small)[0]
     probs = dict()
     detected_emotions1 = [(label_classes[i], round(float(prob), 3)) for i, prob in enumerate(prediction1) if
                           prob > THRESHOLD]
@@ -67,3 +72,4 @@ while True:
     print("Предсказанные эмоции 3 модели:", detected_emotions3)
     print("Предсказанные эмоции 4 модели:", detected_emotions_small)
     print("Предсказанные эмоции 5 модели:", detected_emotions_small_v2)
+    #print("Chuzhaya model: " , prediction_ext)

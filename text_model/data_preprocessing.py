@@ -16,20 +16,51 @@ whole_emotions = [
 
 basic_emotions = ['anger', 'disgust', 'fear', 'joy', 'sadness', 'surprise', 'neutral']
 defined_switch = {
-    'admiration': {'joy'}, # восхищение
+    #'admiration': {'joy'}, # восхищение
     'amusement': {'joy'}, # увлечение
     'annoyance': {'anger', 'disgust'},
     'confusion': {'sadness', 'fear'},
     #'curiosity': {'surprise'},
     'disappointment': {'sadness', 'surprise'},
-    'disapproval': {'disgust', 'anger'},
-    'embarrassment': {'sadness', 'fear'},
-    'excitement': {'surprise', 'joy'},
+   # 'disapproval': {'disgust', 'anger'},
+   # 'embarrassment': {'sadness', 'fear'},
+   # 'excitement': {'surprise', 'joy'},
     'grief': {'sadness'},
-    'nervousness': {'fear', 'sadness', 'anger'},
+    'nervousness': {'fear', 'sadness'},
     'optimism': {'joy'},
     #'pride': {'joy'},
     'remorse': {'sadness', 'disgust'}
+}
+
+emotion_mapping = {
+    'admiration': 'joy',
+    'amusement': 'joy',
+    #'anger': 'anger',
+    'annoyance': 'anger',
+    'approval': 'joy',
+    'caring': 'joy',
+    'confusion': 'neutral',
+    'curiosity': 'neutral',
+    'desire': 'joy',
+    'disappointment': 'sadness',
+    'disapproval': 'disgust',
+    #'disgust': 'disgust',
+    'embarrassment': 'sadness',
+    'excitement': 'joy',
+    #'fear': 'fear',
+    'gratitude': 'joy',
+    'grief': 'sadness',
+    #'joy': 'joy',
+    'love': 'joy',
+    'nervousness': 'fear',
+    #'neutral': 'neutral',
+    'optimism': 'joy',
+    'pride': 'joy',
+    'realization': 'neutral',
+    'relief': 'joy',
+    'remorse': 'sadness',
+    #'sadness': 'sadness',
+    #'surprise': 'surprise'
 }
 
 non_defined = {'approval', 'caring', 'desire', 'gratitude', 'love', 'realization', 'relief', 'curiosity', 'pride'}
@@ -41,7 +72,8 @@ proc_data = raw_data.copy()
 
 # изменение классов, где эмоция определяется комбинацией базовых
 def change_def_emotion(index, column):
-    basic_list = defined_switch[column]
+    #basic_list = defined_switch[column]
+    basic_list = emotion_mapping[column]
     for emo in basic_list:
         proc_data.at[index, emo] = 1
 
@@ -66,13 +98,15 @@ for i in range (proc_data.shape[0]):
 norm_columns = ['ru_text'] + basic_emotions
 
 proc_data = proc_data[norm_columns].dropna()
+#count_unclear = raw_data[raw_data["example_very_unclear"] == False].shape[0]
+#print(f"Количество строк, где example_very_unclear == True: {count_unclear}")
 
 nulls_proc = (proc_data[basic_emotions].sum(axis=1) == 0)
 kolv0 = (proc_data[basic_emotions].sum(axis=1) == 0).sum()
 nulls_raw = (raw_data[basic_emotions].sum(axis=1) == 0)
 old_kolv0 = (raw_data[basic_emotions].sum(axis=1) == 0).sum()
 print(f"Novy dataset: {kolv0}; Stary dataset: {old_kolv0}")
-proc_data.to_csv("../../dataset/ru-go-emotions-preprocessed_v2.csv", index=False)
+proc_data.to_csv("../../dataset/ru-go-emotions-preprocessed_v7.csv", index=False)
 print("Новый датасет: ", proc_data.shape, "\nКолонки: ", proc_data.columns, "\nФайл csv сохранен вне папки")
 print("Новый датасет: ", proc_data.shape)
 
@@ -99,7 +133,7 @@ plt.xlabel("Эмоции")
 plt.ylabel("Количество вхождений")
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig("images/proc_data_class_v2.png")
+plt.savefig("images/proc_data_class_v7.png")
 
 emotion_counts = raw_data[whole_emotions].sum().sort_values(ascending=False)
 
@@ -116,7 +150,7 @@ plt.xlabel("Эмоции")
 plt.ylabel("Количество вхождений")
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig("images/raw_data_class_v2.png")
+plt.savefig("images/raw_data_class_v7.png")
 
 
 

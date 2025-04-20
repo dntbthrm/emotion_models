@@ -17,17 +17,20 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 # Загрузка модели
-model = load_model('./emotion_model_small_v2.keras')
+model = load_model('./emotion_model_small_v6.keras')
 
 # Загрузка токенизатора
-with open('train_test_data/tokenizer_small.pkl', 'rb') as f:
+with open('v6/tokenizer_small.pkl', 'rb') as f:
     tokenizer = pickle.load(f)
 
 # Загрузка меток
-with open('train_test_data/label_to_index_small.pkl', 'rb') as f:
+with open('v6/label_to_index_small.pkl', 'rb') as f:
     label_to_index = pickle.load(f)
 
 #index_to_label = {v: k for k, v in label_to_index.items()}
+print(label_to_index)
+
+
 
 # Текстовая предобработка
 stop_words = stopwords.words('russian') + list(punctuation)
