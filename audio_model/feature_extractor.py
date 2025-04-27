@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 # логирование
 logging.basicConfig(
-    filename="preprocessing.log",
+    filename="preprocessing_2.log",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
 )
@@ -46,7 +46,7 @@ def extract_features(file_path):
 
 
 # обработка датасета и создания CSV
-def process_dataset(dataset_path, emotions_map, output_csv):
+def process_dataset(dataset_path, emotions_map, output_csv, dataset):
     data = []
     total_files = sum(len(files) for _, _, files in os.walk(dataset_path))
     logging.info(f"обработка {dataset_path}. Файлов для обработки: {total_files}")
@@ -55,13 +55,14 @@ def process_dataset(dataset_path, emotions_map, output_csv):
         for file in tqdm(files):
             if file.endswith(".wav"):
                 file_path = os.path.join(root, file)
-                label = get_emotion_label(file, emotions_map)
+                label = get_emotion_label(file, emotions_map, dataset)
+                label_code = int(emotion_codes.get(label))
 
                 logging.info(f"Файл: {file_path} (Эмоция: {label})")
 
                 features = extract_features(file_path)
                 if features is not None:
-                    data.append(np.hstack([features, label]))
+                    data.append(np.hstack([features, label_code]))
 
     columns = [f"mfcc_{i}" for i in range(13)] + \
               [f"mfcc_std_{i}" for i in range(13)] + \
@@ -81,26 +82,48 @@ def process_dataset(dataset_path, emotions_map, output_csv):
 
 
 # эмоции по имени файла
-def get_emotion_label(filename, emotions_map):
-    for key in emotions_map:
-        if key in filename:
-            return emotions_map[key]
+def get_emotion_label(filename, emotions_map, dataset):
+    if dataset == 1:
+        for key in emotions_map:
+            emo_code = filename.split('-')[2]
+            if key in emo_code:
+                return emotions_map[key]
+    else:
+        for key in emotions_map:
+            if key in filename:
+                return emotions_map[key]
     return "unknown"
 
 
 # карты эмоций
-ravdess_map = {"01": "neutral", "02": "calm", "03": "happy", "04": "sad", "05": "angry", "06": "fearful",
+ravdess_map = {"01": "neutral", "02": "neutral", "03": "happy", "04": "sad", "05": "angry", "06": "fearful",
                "07": "disgust", "08": "surprised"}
 crema_map = {"NEU": "neutral", "HAP": "happy", "SAD": "sad", "ANG": "angry", "FEA": "fearful", "DIS": "disgust"}
 tess_map = {"neutral": "neutral", "happy": "happy", "sad": "sad", "angry": "angry", "fear": "fearful",
-            "disgust": "disgust", "surprise": "surprised"}
+            "disgust": "disgust", "_ps": "surprised"}
+
+
+emotion_codes = {
+    "neutral" : 1,
+    "happy" : 2,
+    "sad" : 3,
+    "angry" : 4,
+    "fearful" : 5,
+    "disgust" : 6,
+    "surprised" : 7
+}
 
 # пути к датасетам
-ravdess_path = "../../ravdess"
-crema_path = "../../CREMA-D"
-tess_path = "../../TESS"
+ravdess_path = "../../dats/ravdess"
+crema_path = "../../dats/CREMA-D"
+tess_path = "../../dats/TESS"
+
+
+# 1- ravdess
+# 2 - crema
+# 3 - tess
 
 # запускть по очереди, а то комп ляжет
-#process_dataset(ravdess_path, ravdess_map, "ravdess_features.csv")
-#process_dataset(crema_path, crema_map, "crema_features.csv")
-#process_dataset(tess_path, tess_map, "tess_features.csv")
+#process_dataset(ravdess_path, ravdess_map, "ravdess_features_2.csv", 1)
+#process_dataset(crema_path, crema_map, "crema_features_2.csv", 2)
+#process_dataset(tess_path, tess_map, "tess_features_2.csv", 3)

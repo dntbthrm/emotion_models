@@ -1,3 +1,12 @@
+emotion_codes = {
+    1 : "neutral",
+    2 : "happy",
+    3 : "sad" ,
+    4 : "angry" ,
+    5 : "fearful",
+    6 : "disgust" ,
+    7 :  "surprised"
+}
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,10 +20,10 @@ import joblib
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-datasets = ["ravdess_features.csv", "crema_features.csv", "tess_features.csv"]
+datasets = ["ravdess_features_2.csv", "crema_features_2.csv", "tess_features_2.csv"]
 data = pd.concat([pd.read_csv(ds) for ds in datasets], ignore_index=True)
 
-# Разделение признаков и меток
+# разделение признаков и меток
 X = data.drop(columns=['label'])  # label - колонка с метками
 y = data['label']
 
@@ -24,11 +33,11 @@ X_train_sample, _, y_train_sample, _ = train_test_split(X_train, y_train, test_s
 
 # диапазоны
 param_dist = {
-    'n_estimators': [50, 100, 200],
-    'learning_rate': [0.01, 0.05, 0.1],
-    'max_depth': [3, 5, 7],
+    'n_estimators': [100, 200, 300, 400],
+    'learning_rate': [0.01, 0.05, 0.1, 0.15],
+    'max_depth': [5, 7, 10, 15],
     'subsample': [0.7, 0.8, 1.0],
-    'min_samples_split': [2, 5, 10],
+    'min_samples_split': [2, 5, 10, 15],
 }
 
 # гридсерч параметров
@@ -40,13 +49,15 @@ random_search.fit(X_train_sample, y_train_sample)
 best_params = random_search.best_params_
 best_clf = random_search.best_estimator_
 
+
+target_names = [emotion_codes[i] for i in range(1, 8)]
 # оценка
 y_pred = best_clf.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 f1 = f1_score(y_test, y_pred, average='weighted')
-class_report = classification_report(y_test, y_pred)
+class_report = classification_report(y_test, y_pred, target_names=target_names)
 
-with open("results.txt", "w") as f:
+with open("results_train.txt", "w") as f:
     f.write(f"Лучшие гиперпараметры: {best_params}\n")
     f.write(f"Accuracy: {accuracy:.4f}, F1-score: {f1:.4f}\n")
     f.write(class_report)
@@ -64,4 +75,4 @@ sns.lineplot(x=results['param_max_depth'], y=results['mean_test_score'], ax=axes
 axes[2].set_title("Влияние глубины дерева")
 
 #plt.show()
-plt.savefig("metrics_plot.png")
+plt.savefig("metrics_plot_train.png")
