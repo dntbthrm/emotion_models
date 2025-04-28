@@ -1,2 +1,3 @@
 ./text_model/data_arrays/*
 .venv
+./text_model/trans_data/*
