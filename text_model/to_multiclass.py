@@ -11,11 +11,20 @@ whole_emotions = [
 
 basic_emotions = ['anger', 'disgust', 'fear', 'joy', 'sadness', 'surprise', 'neutral']
 
-basic_dict = {'anger' : 1, 'disgust': 2, 'fear' : 3, 'joy': 4, 'sadness': 5, 'surprise': 6, 'neutral': 7}
+basic_dict = {'anger' : 0, 'disgust': 1, 'fear' : 2, 'joy': 3, 'sadness': 4, 'surprise': 5, 'neutral': 6}
 
 trash = ['text', 'id', 'author', 'subreddit', 'link_id', 'parent_id',
        'created_utc', 'rater_id', 'example_very_unclear']
 
+priority = {
+    'fear': 1,
+    'anger': 2,
+    'joy': 3,
+    'sadness': 4,
+    'surprise': 5,
+    'disgust': 6,
+    'neutral': 7
+}
 
 emotion_mapping = {
     #'admiration': 'joy',
@@ -26,7 +35,7 @@ emotion_mapping = {
     'curiosity': 'surprise',  # вместо neutral → surprise
     #'desire': 'joy',
     'disappointment': 'sadness',
-    'disapproval': ['anger', 'disgust'],  # вместо anger → disgust
+    'disapproval':  'disgust',  # вместо anger → disgust
     'embarrassment': 'fear', #['sadness', 'fear'],
     'excitement': 'joy',
     #'gratitude': 'joy',
@@ -35,7 +44,7 @@ emotion_mapping = {
     'nervousness': 'fear',
     'optimism': 'joy',
     'pride': 'joy',
-    'realization': ['surprise', 'fear'],  # вместо neutral → surprise
+    'realization': 'surprise',  # вместо neutral → surprise
     #'relief': 'joy',
     'remorse': 'sadness',
 }
@@ -108,20 +117,32 @@ print(f"not null shape: {raw_data.shape}")
 new_rows = []
 
 # замена эмоций на лейбл + дубли
-for index, row in raw_data.iterrows():
+'''for index, row in raw_data.iterrows():
     present_emotions = [emotion for emotion in basic_emotions if row[emotion] == 1]
     #print(present_emotions)
     for emotion in present_emotions:
         new_row = row.to_dict()
         new_row['label'] = basic_dict.get(emotion)
-        new_rows.append(new_row)
+        new_rows.append(new_row)'''
+for index, row in raw_data.iterrows():
+    present_emotions = [emotion for emotion in basic_emotions if row[emotion] == 1]
 
+    if len(present_emotions) == 1:
+        main_emotion = sorted(present_emotions, key=lambda x: priority[x])[0]
+    elif len(present_emotions) > 1:
+        main_emotion = sorted(present_emotions)[0]
+    else:
+        continue  # если нет эмоций, пропускаем
+
+    new_row = row.to_dict()
+    new_row['label'] = basic_dict.get(main_emotion)
+    new_rows.append(new_row)
 
 new_df = pd.DataFrame(new_rows)
 
 new_df = new_df.drop(basic_emotions,axis=1)
 
-new_df.to_csv('../../dataset/updated_data.csv', index=False)
+new_df.to_csv('../../dataset/updated_data_1.csv', index=False)
 print(new_df.shape)
 print(new_df.head())
 
