@@ -1,0 +1,16 @@
+Лучшие гиперпараметры: {'learning_rate': 0.05, 'max_depth': 7, 'min_samples_split': 10, 'n_estimators': 400, 'subsample': 0.7}
+Топ-7 признаков: ['mfcc_std_1', 'tonnetz_3', 'rms_std', 'mfcc_2', 'mfcc_std_10', 'chroma_7', 'mfcc_7']
+Accuracy: 0.8715, F1-score: 0.8715
+              precision    recall  f1-score   support
+
+     neutral       0.92      0.94      0.93       195
+       happy       0.82      0.83      0.83       156
+         sad       0.93      0.90      0.91       157
+       angry       0.88      0.86      0.87       157
+     fearful       0.83      0.87      0.85       157
+     disgust       0.88      0.81      0.84       157
+   surprised       0.82      0.87      0.84       157
+
+    accuracy                           0.87      1136
+   macro avg       0.87      0.87      0.87      1136
+weighted avg       0.87      0.87      0.87      1136

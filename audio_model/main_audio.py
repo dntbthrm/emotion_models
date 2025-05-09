@@ -5,14 +5,11 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score, classification_report
 
-'''df = pd.concat([
-    pd.read_csv("ravdess_features_2.csv"),
-    pd.read_csv("crema_features_2.csv"),
-    pd.read_csv("tess_features_2.csv")
-])'''
 
-df = pd.read_csv("tess_features_2.csv")
-df = df[['mfcc_std_10', 'chroma_7', 'mfcc_2', 'mfcc_10', 'spectral_contrast_3', 'tonnetz_3', 'label']]
+df_1 = pd.read_csv("tess_features_2.csv")
+df_2 = pd.read_csv("ravdess_features_2.csv")
+df = pd.concat([df_1, df_2], ignore_index=True)
+df = df[['mfcc_std_1', 'tonnetz_3', 'rms_std', 'mfcc_2', 'mfcc_std_10', 'chroma_7', 'mfcc_7', 'label']]
 
 
 print(df.columns)
@@ -20,19 +17,19 @@ print(df.columns)
 X = df.drop(columns=['label'])
 y = df['label']
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
 
-'''best_params = {'subsample': 0.8,
+train_df = pd.concat([X_train, y_train], axis=1)
+test_df = pd.concat([X_test, y_test], axis=1)
+
+train_df.to_csv("train_dataset_v1.csv", index=False)
+test_df.to_csv("test_dataset_v1.csv", index=False)
+
+best_params = {'subsample': 0.7,
                'n_estimators': 400,
-               'min_samples_split': 15,
+               'min_samples_split': 10,
                'max_depth': 7,
                'learning_rate': 0.05
-               }'''
-best_params = {'subsample': 0.8,
-               'n_estimators': 100,
-               'min_samples_split': 5,
-               'max_depth': 5,
-               'learning_rate': 0.1
                }
 
 model = GradientBoostingClassifier(**best_params)
@@ -55,17 +52,10 @@ accuracy = accuracy_score(y_test, y_pred)
 f1 = f1_score(y_test, y_pred, average='weighted')
 class_report = classification_report(y_test, y_pred, target_names= target_names)
 
-with open("final_results_v2.txt", "w") as f:
+with open("final_results_big.txt", "w") as f:
     f.write(f"Accuracy: {accuracy:.4f}, F1-score: {f1:.4f}\n")
     f.write("\nClassification Report:\n")
     f.write(class_report)
 
-plt.figure(figsize=(10, 16))
-plt.barh(X.columns, model.feature_importances_)
-plt.xlabel("Важность признака")
-plt.ylabel("Название признака")
-plt.title("Важность признаков в модели")
-#plt.savefig("feature_importance_big.png")
-
-joblib.dump(model, "audio_classifier_v2.pkl")
+joblib.dump(model, "audio_classifier_big.pkl")
 

@@ -2,14 +2,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Настройка визуализации
 sns.set(style="whitegrid", font_scale=1.1)
 
-# Загрузка данных
 ravdess = pd.read_csv("ravdess_features_2.csv")
 crema = pd.read_csv("crema_features_2.csv")
 tess = pd.read_csv("tess_features_2.csv")
-data = pd.concat([ravdess, crema, tess], ignore_index=True)
+# в crema нет удивления, его не учитываем
+data = pd.concat([ravdess, tess], ignore_index=True)
 
 # Добавление информации о происхождении
 ravdess['dataset'] = 'RAVDESS'
