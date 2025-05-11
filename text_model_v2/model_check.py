@@ -62,5 +62,5 @@ plt.savefig("predicted_distribution_pie.png")
 #report_df = pd.DataFrame(report).transpose()
 print("\nТаблица метрик по классам:")
 print(classification_report(y_true, y_pred, target_names=target_names, digits=2))
-with open("classification_report.txt", "w", encoding="utf-8") as f:
-    f.write(classification_report(y_true, y_pred, target_names=target_names, digits=2))
+with open("classification_report_4digits.txt", "w", encoding="utf-8") as f:
+    f.write(classification_report(y_true, y_pred, target_names=target_names, digits=4))
