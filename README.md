@@ -1,1 +1,1 @@
-# Текстовая модель доступна по ссылке: https://drive.google.com/file/d/1oItDt7Q_YzlfrMAyNYJM5moOKegYTZiR/view?usp=sharing
+Текстовая модель доступна по ссылке:[ https://drive.google.com/file/d/1oItDt7Q_YzlfrMAyNYJM5moOKegYTZiR/view?usp=sharing](https://drive.google.com/file/d/1AfYKl8sk6E2HBbC4RSqfYmSSWYzA-8d7/view?usp=sharing)
